@@ -21,6 +21,11 @@ OBJ_DIR = $(BIN_DIR)/obj
 SRC = main.cpp
 OBJ = $(SRC:%=%.o)
 
+ifeq ($(debuguart), true)
+	CPPFLAGS += -DDEBUG_UART
+	SRC += uart.cpp
+endif
+
 all: dirs $(TARGET).elf size
 
 dirs:
