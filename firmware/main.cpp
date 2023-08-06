@@ -1,10 +1,12 @@
 #include "debug.hpp"
+#include "display.hpp"
 
 #ifdef DEBUG_UART
     #include "uart.hpp"
 #endif
 
-#include <avr/fuse.h>
+#include <avr/io.h>
+#include <avr/interrupt.h>
 
 FUSES =
 {
@@ -22,7 +24,11 @@ int main()
     uart::init_as_stdout<uart::baudrate::B2400>();
 #endif
 
+    sei();
+    display::init();
     DEBUG_PRINTF("Init done\r\n");
+
+    display::enable_screen();
 
     while(true)
     {}
