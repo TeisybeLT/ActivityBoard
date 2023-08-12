@@ -193,6 +193,45 @@ namespace display
         
         constexpr auto symbol_count = utils::array_size(symbols);
     }
+    
+    namespace cd_spinner
+    {
+        constexpr auto a = seg_address{14, 3};
+        constexpr auto b = seg_address{14, 4};
+        constexpr auto c = seg_address{14, 5};
+        constexpr auto center_s_cdp = seg_address{19, 0};
+        
+        using IndexType = uint8_t;
+        using map = segment_map_single<IndexType, a, b, c>;
+    }
+
+    namespace animation_wheel
+    {
+        constexpr auto a = seg_address{16, 7};
+        constexpr auto b = seg_address{16, 6};
+        constexpr auto c = seg_address{16, 5};
+        constexpr auto d = seg_address{16, 4};
+        constexpr auto e = seg_address{16, 3};
+        constexpr auto f = seg_address{16, 2};
+        constexpr auto g = seg_address{16, 1};
+
+        using IndexType = uint8_t;
+        using map = segment_map_single<IndexType, a, b, c, d, e, f, g>;
+    }
+
+    namespace animation_line
+    {
+        constexpr auto a = seg_address{17, 7};
+        constexpr auto b = seg_address{17, 6};
+        constexpr auto c = seg_address{17, 5};
+        constexpr auto d = seg_address{17, 4};
+        constexpr auto e = seg_address{17, 3};
+        constexpr auto f = seg_address{17, 2};
+        constexpr auto g = seg_address{17, 1};
+
+        using IndexType = uint8_t;
+        using map = segment_map_single<IndexType, a, b, c, d, e, f, g>;
+    }
 }
 
 #endif
