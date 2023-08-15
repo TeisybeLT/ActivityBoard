@@ -63,6 +63,16 @@ void display::disable_screen()
     PORTB = PORTB & ~_BV(constants::pins::nINH);
 }
 
+void display::set_backlight_brightness(uint8_t value)
+{
+    OCR0A = value;
+}
+
+uint8_t display::get_backlight_brightness()
+{
+    return OCR0A;
+}
+
 void display::init()
 {
     // Configure mode of nINH and CE pin
@@ -76,6 +86,12 @@ void display::init()
     // Initial condition is screen is inhibited and the display controller chip is not selected
     display::disable_screen();
     PORTB = PORTB & ~_BV(constants::pins::CE);
+    
+    // Configure PWM output for the LCD backlight. Use Fast PWM mode
+    DDRD = DDRD | _BV(constants::pins::backlight);
+    TCCR0A = TCCR0A | (0b10 << COM0A0) | (0b11 << WGM00);
+    TCCR0B = TCCR0B | (0b010 << CS00);
+    display::set_backlight_brightness(0); // Default value - backlight off(ish)
     
     DEBUG_PRINTF("Display controller init ok\r\n");
 }

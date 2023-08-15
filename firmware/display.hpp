@@ -25,6 +25,9 @@ namespace display
     void enable_screen();
     void disable_screen();
 
+    void set_backlight_brightness(uint8_t value);
+    uint8_t get_backlight_brightness();
+    
     void init();
     
     // Do not call draw from an interrupt

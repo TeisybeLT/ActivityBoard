@@ -13,6 +13,7 @@ namespace constants
         // Faceplate screen pins
         constexpr auto CE = PORTB2;
         constexpr auto nINH = PORTB1;
+        constexpr auto backlight = PORTD6;
     }
 }
 
