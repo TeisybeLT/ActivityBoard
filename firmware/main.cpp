@@ -1,5 +1,6 @@
 #include "debug.hpp"
 #include "display.hpp"
+#include "input.hpp"
 
 #ifdef DEBUG_UART
     #include "uart.hpp"
@@ -7,6 +8,7 @@
 
 #include <avr/io.h>
 #include <avr/interrupt.h>
+
 
 FUSES =
 {
@@ -26,6 +28,7 @@ int main()
 
     sei();
     display::init();
+    input::init();
     DEBUG_PRINTF("Init done\r\n");
 
     display::enable_screen();
