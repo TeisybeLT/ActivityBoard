@@ -33,6 +33,12 @@ namespace algorithms
             static_cast<size_t>(a - b) :
             static_cast<size_t>(b - a);
     }
+    
+    template<traits::integral IntT>
+    [[nodiscard]] constexpr bool in_closed_range(IntT left, IntT right, IntT value)
+    {
+        return (left <= value) && (value <= right);
+    }
 }
 
 #endif
