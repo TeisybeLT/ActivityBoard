@@ -80,6 +80,7 @@ namespace input
     
     [[nodiscard]] bank_a_data pop_bank_a();
     [[nodiscard]] bank_b_data pop_bank_b();
+    [[nodiscard]] int8_t pop_rotary();
 }
 
 #endif

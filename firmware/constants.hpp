@@ -18,6 +18,7 @@ namespace constants
         // Input button pins
         constexpr auto KY1 = input::ADC0;
         constexpr auto KY2 = input::ADC1;
+        constexpr auto VOLA = input::ADC2;
     }
 }
 

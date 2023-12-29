@@ -4,7 +4,6 @@
 #include "debug.hpp"
 #include "utils.hpp"
 
-#include <avr/interrupt.h>
 #include <util/atomic.h>
 #include <util/delay.h>
 
@@ -30,6 +29,18 @@ namespace
     constexpr int16_t sw_bank_b_lookup[static_cast<size_t>(input::sw_bank_b::MAX)] = 
     {0, 33, 79, 135, 207, 287, 387, 496, 600, 696, 920, 1023};
     constexpr const int16_t* sw_bank_b_lookup_end = sw_bank_b_lookup + utils::array_size(sw_bank_b_lookup);
+    
+    constexpr int16_t rot_low[2] = {149, 213};
+    constexpr int16_t rot_mid[2] = {533, 597};
+    constexpr int16_t rot_high[2] = {962, 1023};
+    
+    enum class rot_range : uint8_t
+    {
+        undefined,
+        low,
+        mid,
+        high,
+    };
 
     auto bank_a_buffer = input::bank_a_data
     {
@@ -41,6 +52,8 @@ namespace
         .button = input::sw_bank_b::none,
         .is_long = false
     };
+
+    auto rotary_buffer = int8_t{0};
 
     [[nodiscard]] int16_t sample_channel(input::adc_mux channel)
     {
@@ -63,6 +76,20 @@ namespace
         const auto value = sample_channel(channel);
         const auto* iter = algorithms::binary_interval_search(begin, end, value);
         return algorithms::distance(iter, begin);
+    }
+    
+    [[nodiscard]] rot_range sample_to_rotary_range(int16_t value)
+    {
+        if (algorithms::in_closed_range(rot_low[0], rot_low[1], value))
+            return rot_range::low;
+        
+        if (algorithms::in_closed_range(rot_mid[0], rot_mid[1], value))
+            return rot_range::mid;
+        
+        if (algorithms::in_closed_range(rot_high[0], rot_high[1], value))
+            return rot_range::high;
+        
+        return rot_range::undefined;
     }
     
     template<typename BankEnum, typename Buffer>
@@ -105,6 +132,37 @@ namespace
             
         previous_press = current_press;
     }
+
+    void tick_rotary(int16_t sample)
+    {
+        static auto previous_range = rot_range::undefined;
+    
+        const auto current_range = sample_to_rotary_range(sample);
+        if (current_range == previous_range)
+            return;     
+        
+        if (((previous_range == rot_range::mid) && (current_range == rot_range::high)) ||
+            ((previous_range == rot_range::high) && (current_range == rot_range::low)))
+        {
+            // Rotation clock-wise
+            // To detect a CW rotation, the transition patterns are either:
+            // * Low->mid->high (can be simplified to mid->high as is the case here)
+            // * High->low
+            rotary_buffer = (rotary_buffer != 127) ? rotary_buffer + 1 : rotary_buffer;
+        }
+        else if (((previous_range == rot_range::mid) && (current_range == rot_range::low)) ||
+            ((previous_range == rot_range::low) && (current_range == rot_range::high)))
+        {
+            // Rotation counter clock-wise
+            // Rotation clock-wise
+            // To detect a CCW rotation, the transition patterns are either:
+            // * High->mid->low (can be simplified to high->low as is the case here)
+            // * Low->high
+            rotary_buffer = (rotary_buffer != -128) ? rotary_buffer - 1 : rotary_buffer;
+        } 
+
+        previous_range = current_range;
+    }
 }
 
 void input::init()
@@ -114,6 +172,7 @@ void input::init()
     // Power digital input buffers
     disable_digital_input(pins::KY1);
     disable_digital_input(pins::KY2);
+    disable_digital_input(pins::VOLA);
 
     // Set Vref to Vcc. Since the buttons are a resistor ladder,the precision of Vref isn't crucial
     // that's why Vcc will suffice.
@@ -127,6 +186,7 @@ void input::init()
     // This is done to allow proper initialization of sampling logic
     (void)sample_channel(pins::KY1);
     (void)sample_channel(pins::KY2);
+    (void)sample_channel(pins::VOLA);
     
     DEBUG_PRINTF("Input controller init ok\r\n");
 }
@@ -151,6 +211,9 @@ void input::tick()
         const auto idx = sample_and_get_array_index(sw_bank_b_lookup, sw_bank_b_lookup_end, pins::KY2);
         tick_generic<input::sw_bank_b>(idx, bank_b_buffer);
     }
+    
+    const auto rotary_adc = sample_channel(pins::VOLA);
+    tick_rotary(rotary_adc);
 }
 
 input::bank_a_data input::pop_bank_a()
@@ -176,5 +239,12 @@ input::bank_b_data input::pop_bank_b()
         .is_long = false
     };
     
+    return out;
+}
+
+int8_t input::pop_rotary()
+{
+    const auto out = rotary_buffer;
+    rotary_buffer = 0;
     return out;
 }
