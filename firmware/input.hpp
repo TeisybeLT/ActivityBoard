@@ -75,6 +75,7 @@ namespace input
     
     constexpr auto ticks_for_long_press = uint8_t{40};
 
+    // Input must be initialized after buzzer init has completed
     void init();
     void tick();
     

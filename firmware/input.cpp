@@ -1,5 +1,6 @@
 #include "input.hpp"
 #include "algorithms.hpp"
+#include "buzzer.hpp"
 #include "constants.hpp"
 #include "debug.hpp"
 #include "utils.hpp"
@@ -9,6 +10,10 @@
 
 namespace
 {
+    constexpr auto short_press_beep_ticks = uint8_t{64};
+    constexpr auto long_press_beep_ticks = uint8_t{255};
+    constexpr auto button_note = buzzer::note::C;
+
     void set_adc_channel(input::adc_mux target)
     {
         static constexpr auto mux_mask = uint8_t{0b11110000};
@@ -114,6 +119,7 @@ namespace
             {
                 key_buffer.is_long = false;
                 key_buffer.button = previous_press;
+                buzzer::set_note_for(button_note, short_press_beep_ticks);
             }
         }
         else if ((previous_press != BankEnum::none) && (previous_press == current_press))
@@ -127,6 +133,7 @@ namespace
                 long_posted = true;
                 key_buffer.is_long = true;
                 key_buffer.button = current_press;
+                buzzer::set_note_for(button_note, long_press_beep_ticks);
             }
         }
             
@@ -149,6 +156,7 @@ namespace
             // * Low->mid->high (can be simplified to mid->high as is the case here)
             // * High->low
             rotary_buffer = (rotary_buffer != 127) ? rotary_buffer + 1 : rotary_buffer;
+            buzzer::set_note_for(button_note, short_press_beep_ticks);
         }
         else if (((previous_range == rot_range::mid) && (current_range == rot_range::low)) ||
             ((previous_range == rot_range::low) && (current_range == rot_range::high)))
@@ -159,6 +167,7 @@ namespace
             // * High->mid->low (can be simplified to high->low as is the case here)
             // * Low->high
             rotary_buffer = (rotary_buffer != -128) ? rotary_buffer - 1 : rotary_buffer;
+            buzzer::set_note_for(button_note, short_press_beep_ticks);
         } 
 
         previous_range = current_range;
