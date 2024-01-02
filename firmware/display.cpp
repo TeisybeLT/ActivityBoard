@@ -76,7 +76,7 @@ uint8_t display::get_backlight_brightness()
 void display::init()
 {
     // Configure mode of nINH and CE pin
-    static constexpr auto port_b_bit_mask = _BV(DDB5) | _BV(DDB3) | _BV(DDB2) | _BV(DDB1);
+    static constexpr auto port_b_bit_mask = _BV(DDB5) | _BV(DDB3) | _BV(DDB2) | _BV(DDB0);
     DDRB = DDRB | port_b_bit_mask;
 
     // Configure serial transmitter
