@@ -1,3 +1,4 @@
+#include "buzzer.hpp"
 #include "debug.hpp"
 #include "display.hpp"
 #include "input.hpp"
@@ -8,7 +9,6 @@
 
 #include <avr/io.h>
 #include <avr/interrupt.h>
-
 
 FUSES =
 {
@@ -27,12 +27,13 @@ int main()
 #endif
 
     sei();
+    buzzer::init();
     display::init();
     input::init();
     DEBUG_PRINTF("Init done\r\n");
 
     display::enable_screen();
-
+    
     while(true)
     {}
 
