@@ -112,22 +112,8 @@ namespace display
         constexpr auto m = seg_address{0, 3};
         constexpr auto decimal = seg_address{10, 7};
         
-        seg_address calculate_seg_offset(seg_address base_segment, uint8_t offset)
-        {
-            const auto new_bit_offset = static_cast<int8_t>(base_segment.bit - offset);
-            if (new_bit_offset < 0)
-            {
-                return seg_address {
-                    .byte = static_cast<uint8_t>((base_segment.byte + (offset * 2 - 1)) & 0b11111), 
-                    .bit = static_cast<uint8_t>((new_bit_offset + 8) & 0b111)
-                };
-            }
-
-            return seg_address {
-                .byte = static_cast<uint8_t>((base_segment.byte + (offset * 2)) & 0b11111),
-                .bit = static_cast<uint8_t>(new_bit_offset & 0b111)
-            };
-        }           
+                   
+        seg_address calculate_seg_offset(seg_address base_segment, uint8_t offset);
         
         template<traits::unsigned_integral IndexType, seg_address ... Segments>
         struct segment_map_multi : public segment_map_base<IndexType, Segments...>
