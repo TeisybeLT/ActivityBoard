@@ -12,8 +12,8 @@ SIZE = avr-size
 
 CFLAGS = -std=c23
 CXXFLAGS = -std=c++23 -fno-exceptions -fno-rtti
-CPPFLAGS = -Wall -Wextra -Werror -Wshadow -Wconversion -Wunreachable-code -mmcu=$(DEVICE) -DF_CPU=$(CLOCK) -Os --param=min-pagesize=0
-LDFLAGS = -mmcu=$(DEVICE) -Wl,-Map=bin/$(TARGET).map,--cref
+CPPFLAGS = -flto -Wall -Wextra -Werror -Wshadow -Wconversion -Wunreachable-code -mmcu=$(DEVICE) -DF_CPU=$(CLOCK) -Os --param=min-pagesize=0
+LDFLAGS = -flto -mmcu=$(DEVICE) -Wl,-Map=bin/$(TARGET).map,--cref
 
 BIN_DIR = bin
 OBJ_DIR = $(BIN_DIR)/obj
