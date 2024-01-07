@@ -73,7 +73,7 @@ namespace input
         GND = 0b1111
     };
     
-    constexpr auto ticks_for_long_press = uint8_t{40};
+    constexpr auto ticks_for_long_press = uint8_t{128};
 
     // Input must be initialized after buzzer init has completed
     void init();
