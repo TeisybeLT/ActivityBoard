@@ -1,6 +1,7 @@
 #ifndef UTILS_HPP
 #define UTILS_HPP
 
+#include <stddef.h>
 #include <stdint.h>
 
 namespace utils
