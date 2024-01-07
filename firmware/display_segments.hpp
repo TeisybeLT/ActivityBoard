@@ -189,9 +189,9 @@ namespace display
     
     namespace cd_spinner
     {
-        constexpr auto a = seg_address{14, 3};
-        constexpr auto b = seg_address{14, 4};
-        constexpr auto c = seg_address{14, 5};
+        constexpr auto a = seg_address{15, 3};
+        constexpr auto b = seg_address{15, 4};
+        constexpr auto c = seg_address{15, 5};
         constexpr auto center_s_cdp = seg_address{19, 0};
         
         using IndexType = uint8_t;
