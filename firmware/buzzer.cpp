@@ -142,6 +142,7 @@ void buzzer::set_note(buzzer::note note)
         {
             is_playing = false;
         }
+        return;
     }
     
     set_note_regs(note);
