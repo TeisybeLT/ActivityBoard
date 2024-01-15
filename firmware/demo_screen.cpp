@@ -45,15 +45,17 @@ namespace
 
 demo_screen::demo_screen()
 {
-    (void)memset(symbol_array, empty_symbol, sizeof(symbol_array));
-}
-
-void demo_screen::set_static_elements()
-{
     constexpr auto screen_number = uint8_t{1};
+
+    (void)::memset(symbol_array, empty_symbol, sizeof(symbol_array));
+
     seg_7::map::write_segments(seg_7::symbols[screen_number]);
     set_segment(cd_spinner::center_s_cdp);
     set_backlight_brightness(0xFF);
+}
+
+demo_screen::~demo_screen()
+{
 }
 
 void demo_screen::tick(input::bank_a_data input_a, input::bank_b_data input_b, int8_t rot_val)

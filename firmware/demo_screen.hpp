@@ -9,8 +9,8 @@ namespace screens
     struct demo_screen : public i_screen
     {
         demo_screen();
+        ~demo_screen();
 
-        void set_static_elements() override;
         void tick(input::bank_a_data input_a, input::bank_b_data input_b, int8_t rot_val) override;
         
     private:
