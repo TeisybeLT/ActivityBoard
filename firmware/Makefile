@@ -18,7 +18,7 @@ LDFLAGS = -flto -mmcu=$(DEVICE) -Wl,-Map=bin/$(TARGET).map,--cref
 BIN_DIR = bin
 OBJ_DIR = $(BIN_DIR)/obj
 
-SRC = main.cpp display.cpp display_segments.cpp input.cpp buzzer.cpp demo_screen.cpp
+SRC = main.cpp display.cpp display_segments.cpp input.cpp buzzer.cpp heap.cpp demo_screen.cpp 
 OBJ = $(SRC:%=%.o)
 
 ifeq ($(debuguart), true)
