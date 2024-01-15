@@ -17,6 +17,7 @@ namespace screens
         };
 
         match_screen();
+        ~match_screen();
     
         void tick(input::bank_a_data input_a, input::bank_b_data input_b, int8_t rot_val) override;
     private:

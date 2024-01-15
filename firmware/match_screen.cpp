@@ -35,6 +35,11 @@ match_screen::match_screen()
     ::srand(globals::tick_counter);
 }
 
+match_screen::~match_screen()
+{
+
+}
+
 void match_screen::tick(input::bank_a_data input_a, input::bank_b_data input_b, int8_t rot_val)
 {
     switch(current_state)
@@ -81,7 +86,7 @@ void match_screen::start()
     redraw_needed = true;
 }
 
-void match_screen::run(input::bank_a_data input_a, input::bank_b_data input_b, int8_t rot_val)
+void match_screen::run(input::bank_a_data, input::bank_b_data input_b, int8_t rot_val)
 {
     using namespace display;
     if (rot_val)
