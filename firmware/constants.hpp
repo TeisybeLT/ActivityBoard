@@ -7,6 +7,7 @@
 namespace constants
 {
     constexpr auto system_clock = uint32_t{F_CPU};
+    constexpr auto default_backlight_brightness = uint8_t{0xFF};
 
     namespace pins
     {

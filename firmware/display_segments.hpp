@@ -2,8 +2,11 @@
 #define DISPLAY_SEGMENTS_HPP
 
 #include "display.hpp"
+#include "algorithms.hpp"
 #include "traits.hpp"
 #include "utils.hpp"
+
+#include <string.h>
 
 namespace display
 {
@@ -112,28 +115,11 @@ namespace display
         constexpr auto m = seg_address{0, 3};
         constexpr auto decimal = seg_address{10, 7};
         
-                   
         seg_address calculate_seg_offset(seg_address base_segment, uint8_t offset);
         
         template<traits::unsigned_integral IndexType, seg_address ... Segments>
-        struct segment_map_multi : public segment_map_base<IndexType, Segments...>
-        {
-            static void write_segments(IndexType value, uint8_t digit)
-            {
-                using base = segment_map_base<IndexType, Segments...>;
+        struct segment_map_multi;
 
-                for (IndexType index = 0; index < base::count; ++index)
-                {
-                    const auto seg = calculate_seg_offset(base::map[index], digit);
-                    const auto bit = (value >> index) & 0x1;
-                    if (bit)
-                        display::set_segment(seg);
-                    else
-                        display::clear_segment(seg);
-                }
-            }
-        };
-        
         using IndexType = uint16_t;
         using map = segment_map_multi<IndexType, a, b, c, d, e, f, g1, g2, h, il, j, k, m>;
         constexpr IndexType symbols[] = 
@@ -185,6 +171,74 @@ namespace display
         };
         
         constexpr auto symbol_count = utils::array_size(symbols);
+        
+        template<traits::unsigned_integral IndexType, seg_address ... Segments>
+        struct segment_map_multi : public segment_map_base<IndexType, Segments...>
+        {
+            static void write_segments(IndexType value, uint8_t digit)
+            {
+                using base = segment_map_base<IndexType, Segments...>;
+
+                for (IndexType index = 0; index < base::count; ++index)
+                {
+                    const auto seg = calculate_seg_offset(base::map[index], digit);
+                    const auto bit = (value >> index) & 0x1;
+                    if (bit)
+                        display::set_segment(seg);
+                    else
+                        display::clear_segment(seg);
+                }
+            }
+            
+            static constexpr uint8_t char_to_idx(char character)
+            {
+                if (algorithms::in_closed_range('(', ')', character))
+                    return uint8_t(character - '(');
+                else if (character == '+')
+                    return 2;
+                else if (character == '-')
+                    return 3;
+                else if (character == '/')
+                    return 4;
+                else if (algorithms::in_closed_range('0', '9', character))             
+                    return uint8_t(character + 5 - '0');
+                else if (algorithms::in_closed_range('A', 'Z', character))
+                    return uint8_t(character + 15 - 'A');
+                else if (algorithms::in_closed_range('a', 'z', character))
+                    return uint8_t(character + 15 - 'a');
+                else if (character == '\\')
+                    return symbol_count - 3;
+                else if (character == '_')
+                    return symbol_count - 2;
+
+                return symbol_count - 1; // No character
+            }
+            
+            // TODO: Pre-compute display character indexes at compile time
+            // this requires an array and span implementation to store and
+            // reference the converted data but will avoid incurring (much)
+            // run-time conversion cost for static text
+            static void write_text(const char* text, uint8_t at)
+            {
+                const auto string_length = ::strnlen(text, digit_count);
+
+                auto char_idx = uint8_t{0};
+                for (; (at < digit_count) && (char_idx < string_length); ++at)
+                {
+                    write_segments(symbols[char_to_idx(text[char_idx])], at);                    
+                    ++char_idx;
+                }
+            }
+
+            static void clear_segments()
+            {
+                static constexpr auto clear_symbol = symbols[symbol_count - 1];
+
+                for (uint8_t idx = 0; idx < digit_count; idx++)
+                    write_segments(clear_symbol, idx);
+            }
+        };
+
     }
     
     namespace cd_spinner
