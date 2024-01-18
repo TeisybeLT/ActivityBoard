@@ -45,11 +45,8 @@ namespace
 
 demo_screen::demo_screen()
 {
-    constexpr auto screen_number = uint8_t{1};
-
     (void)::memset(symbol_array, empty_symbol, sizeof(symbol_array));
 
-    seg_7::map::write_segments(seg_7::symbols[screen_number]);
     set_segment(cd_spinner::center_s_cdp);
     set_backlight_brightness(0xFF);
 }

@@ -1,7 +1,9 @@
 #include "buzzer.hpp"
 #include "debug.hpp"
 #include "display.hpp"
+#include "globals.hpp"
 #include "input.hpp"
+#include "screen_manager.hpp"
 
 #ifdef DEBUG_UART
     #include "uart.hpp"
@@ -9,6 +11,7 @@
 
 #include <avr/io.h>
 #include <avr/interrupt.h>
+#include "util/delay.h"
 
 FUSES =
 {
@@ -34,8 +37,29 @@ int main()
 
     display::enable_screen();
     
+    auto cur_screen = screens::screen_manager::init();
+    
     while(true)
-    {}
+    {
+        input::tick();
+
+        const auto input_a = input::pop_bank_a();
+        const auto input_b = input::pop_bank_b();        
+        const auto rot_val = input::pop_rotary();        
+        
+        if (input_b.is_long)
+        {
+            if (input_b.button == input::sw_bank_b::sw1)
+                cur_screen = screens::screen_manager::up(); 
+            else if(input_b.button == input::sw_bank_b::sw5)
+                cur_screen = screens::screen_manager::down(); 
+        }
+
+        cur_screen->tick(input_a, input_b, rot_val);
+        ++globals::tick_counter;
+
+        _delay_ms(5);
+    }
 
     return 0;
 }
