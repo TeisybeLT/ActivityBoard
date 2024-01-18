@@ -18,6 +18,11 @@ void* operator new(size_t size)
     return ::malloc(size);
 }
 
+void* operator new(size_t, void* ptr)
+{
+    return ptr;
+}
+
 void* operator new[](size_t size)
 {
     if (size == 0)
@@ -38,7 +43,6 @@ void operator delete(void* ptr, size_t)
     DEBUG_PRINTF("Sized ::delete called!\r\n");
     ::free(ptr);
 }
-
 
 void operator delete[](void* ptr)
 {
