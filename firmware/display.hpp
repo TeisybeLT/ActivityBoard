@@ -29,7 +29,8 @@ namespace display
     uint8_t get_backlight_brightness();
     
     void init();
-    
+    void clear_all(); 
+
     // Do not call draw from an interrupt
     void draw();
 }

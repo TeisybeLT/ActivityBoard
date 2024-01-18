@@ -3,6 +3,7 @@
 #include "constants.hpp"
 
 #include <avr/interrupt.h>
+#include <string.h>
 #include <util/atomic.h>
 
 namespace
@@ -94,6 +95,14 @@ void display::init()
     display::set_backlight_brightness(0); // Default value - backlight off(ish)
     
     DEBUG_PRINTF("Display controller init ok\r\n");
+}
+
+void display::clear_all()
+{
+    ATOMIC_BLOCK(ATOMIC_RESTORESTATE)
+    {
+        (::memset(data_buffer, 0, data_byte_count));
+    }
 }
 
 void display::draw()
