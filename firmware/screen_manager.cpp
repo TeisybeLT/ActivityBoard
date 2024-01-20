@@ -1,7 +1,9 @@
 #include "screen_manager.hpp"
 
+#include "constants.hpp"
 #include "demo_screen.hpp"
 #include "match_screen.hpp"
+#include "keyboard_screen.hpp"
 #include "heap.hpp"
 
 #include "debug.hpp"
@@ -10,7 +12,7 @@ using namespace screens;
 
 namespace
 {
-    constexpr auto max_screen_count = uint8_t{2};
+    constexpr auto max_screen_count = uint8_t{3};
     constexpr auto default_screen = uint8_t{0};
 
     alignas(screens::demo_screen) uint8_t current_screen_data[sizeof(screens::demo_screen)];
@@ -34,8 +36,13 @@ namespace
             case 1:
                 current_screen_ptr = new (current_screen_data) match_screen;
                 break;
+
+            case 2:
+                current_screen_ptr = new (current_screen_data) keyboard_screen;
+                break;
         }
 
+        display::set_backlight_brightness(constants::default_backlight_brightness);
         display::seg_7::map::write_segments(display::seg_7::symbols[new_index + 1]);
         index = new_index;
     }
