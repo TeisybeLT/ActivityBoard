@@ -82,6 +82,12 @@ namespace input
     [[nodiscard]] bank_a_data pop_bank_a();
     [[nodiscard]] bank_b_data pop_bank_b();
     [[nodiscard]] int8_t pop_rotary();
+    
+    void set_a_mask(uint8_t mask);
+    void set_b_mask(uint16_t mask);
+    
+    [[nodiscard]] sw_bank_a get_raw_a();
+    [[nodiscard]] sw_bank_b get_raw_b();
 }
 
 #endif

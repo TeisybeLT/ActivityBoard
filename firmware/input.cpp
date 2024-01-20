@@ -46,6 +46,12 @@ namespace
         mid,
         high,
     };
+    
+    auto a_mask = uint8_t{0};
+    auto b_mask = uint16_t{0};
+    
+    auto raw_a_buffer = input::sw_bank_a::none;
+    auto raw_b_buffer = input::sw_bank_b::none;
 
     auto bank_a_buffer = input::bank_a_data
     {
@@ -212,13 +218,17 @@ void input::tick()
     if (bank_a_buffer.button == sw_bank_a::none)
     {
         const auto idx = sample_and_get_array_index(sw_bank_a_lookup, sw_bank_a_lookup_end, pins::KY1);
-        tick_generic<input::sw_bank_a>(idx, bank_a_buffer);
+        raw_a_buffer = static_cast<sw_bank_a>(idx);
+        if (!(a_mask & uint8_t(1 << idx)))
+            tick_generic<input::sw_bank_a>(idx, bank_a_buffer);
     }
 
     if (bank_b_buffer.button == sw_bank_b::none)
     {
         const auto idx = sample_and_get_array_index(sw_bank_b_lookup, sw_bank_b_lookup_end, pins::KY2);
-        tick_generic<input::sw_bank_b>(idx, bank_b_buffer);
+        raw_b_buffer = static_cast<sw_bank_b>(idx);
+        if (!(b_mask & uint16_t(1 << idx)))
+            tick_generic<input::sw_bank_b>(idx, bank_b_buffer);
     }
     
     const auto rotary_adc = sample_channel(pins::VOLA);
@@ -256,4 +266,32 @@ int8_t input::pop_rotary()
     const auto out = rotary_buffer;
     rotary_buffer = 0;
     return out;
+}
+
+void input::set_a_mask(uint8_t mask)
+{
+    a_mask = mask & ~(1 << static_cast<uint16_t>(sw_bank_a::none));
+}
+
+void input::set_b_mask(uint16_t mask)
+{
+    static constexpr auto non_maskable_buttons = ~uint16_t
+    (
+        _BV(static_cast<uint8_t>(sw_bank_b::none)) |
+        // Long presses on SW1 and SW5 are used for screen switching.
+        // It makes no sense to mask them
+        _BV(static_cast<uint8_t>(sw_bank_b::sw1)) | 
+        _BV(static_cast<uint8_t>(sw_bank_b::sw5))
+    );
+    b_mask = mask & non_maskable_buttons;
+}
+
+input::sw_bank_a input::get_raw_a()
+{
+    return raw_a_buffer;
+}
+
+input::sw_bank_b input::get_raw_b()
+{
+    return raw_b_buffer;
 }

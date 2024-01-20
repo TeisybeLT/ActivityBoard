@@ -3,6 +3,7 @@
 #include "display_segments.hpp"
 #include "globals.hpp"
 
+#include <avr/sfr_defs.h>
 #include <stdlib.h>
 
 #include "debug.hpp"
@@ -33,11 +34,18 @@ namespace
 match_screen::match_screen()
 {
     ::srand(globals::tick_counter);
+
+    input::set_a_mask(0xFF);
+    
+    static constexpr auto rot_mask = ~uint16_t
+    { _BV(static_cast<uint8_t>(input::sw_bank_b::rot)) };
+    input::set_b_mask(rot_mask);
 }
 
 match_screen::~match_screen()
 {
-
+    input::set_a_mask(0);
+    input::set_b_mask(0);
 }
 
 void match_screen::tick(input::bank_a_data input_a, input::bank_b_data input_b, int8_t rot_val)
