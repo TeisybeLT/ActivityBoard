@@ -44,12 +44,14 @@ size: $(TARGET).elf
 	$(SIZE) --format=avr --mcu=$(DEVICE) bin/$(TARGET).elf
 
 flash: all
+	avrdude -c $(PROGRAMMER) -p $(DEVICE) -U flash:w:$(BIN_DIR)/$(TARGET).elf:e
+	
+fuses: all
 	avrdude -c $(PROGRAMMER) -p $(DEVICE) \
-		-U flash:w:$(BIN_DIR)/$(TARGET).elf:e \
 		-U lfuse:w:$(BIN_DIR)/$(TARGET).elf:e \
 		-U hfuse:w:$(BIN_DIR)/$(TARGET).elf:e \
 		-U efuse:w:$(BIN_DIR)/$(TARGET).elf:e
-	
+
 clean: $(DIRS)
 	rm -rd $(BIN_DIR)
 
