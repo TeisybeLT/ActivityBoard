@@ -3,7 +3,10 @@
 #include "display.hpp"
 #include "globals.hpp"
 #include "input.hpp"
+#include "intro.hpp"
 #include "screen_manager.hpp"
+
+#include "buzzer.hpp"
 
 #ifdef DEBUG_UART
     #include "uart.hpp"
@@ -36,6 +39,8 @@ int main()
     DEBUG_PRINTF("Init done\r\n");
 
     display::enable_screen();
+    
+    screens::play_intro();
     
     auto cur_screen = screens::screen_manager::init();
     
