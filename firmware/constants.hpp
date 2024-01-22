@@ -12,14 +12,23 @@ namespace constants
     namespace pins
     {
         // Faceplate screen pins
+        constexpr auto CLK = PORTB5;
+        constexpr auto DATA = PORTB3;
         constexpr auto CE = PORTB2;
         constexpr auto nINH = PORTB0;
         constexpr auto backlight = PORTD6;
+        
+        // Buzzer
+        constexpr auto buzz = PORTB1;
         
         // Input button pins
         constexpr auto KY1 = input::ADC0;
         constexpr auto KY2 = input::ADC1;
         constexpr auto VOLA = input::ADC2;
+        
+        // Debug UART
+        constexpr auto RXD = PORTD0;
+        constexpr auto TXD = PORTD1;
     }
 }
 

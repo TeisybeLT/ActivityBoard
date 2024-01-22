@@ -76,8 +76,21 @@ uint8_t display::get_backlight_brightness()
 
 void display::init()
 {
-    // Configure mode of nINH and CE pin
-    static constexpr auto port_b_bit_mask = _BV(DDB5) | _BV(DDB3) | _BV(DDB2) | _BV(DDB0);
+    using namespace constants;
+    // Configure direction of display pins
+    // Static asserts below are used to ensure that DDB* match PROTB*
+    // This is needed because I am reusing pin definitions here
+    static_assert(DDB0 == PORTB0);
+    static_assert(DDB2 == PORTB2);
+    static_assert(DDB3 == PORTB3);
+    static_assert(DDB5 == PORTB5);
+    static constexpr auto port_b_bit_mask = uint8_t
+    {
+        _BV(pins::CLK) |
+        _BV(pins::DATA) |
+        _BV(pins::CE) | 
+        _BV(pins::nINH)
+    };
     DDRB = DDRB | port_b_bit_mask;
 
     // Configure serial transmitter

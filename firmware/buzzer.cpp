@@ -111,11 +111,13 @@ namespace
 
 void buzzer::init()
 {
+    using namespace constants;
     // Timer1 is used to generate the actual tone that will be played
     // out of the buzzer
     
-    // Set PB1 as output (the timer pin)
-    DDRB = DDRB | _BV(DDB1);
+    // Set timer pin as output
+    static_assert(DDB1 == PORTB1);
+    DDRB = DDRB | _BV(pins::buzz);
 
     // OC1A is the output for the timer (to buzzer)
     TCCR1A = TCCR1A | (0b11 << COM1A0);
