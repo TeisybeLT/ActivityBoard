@@ -1,5 +1,7 @@
 # Firmware for the car radio faceplate
 
+This directory contains firmware for the radio-faceplate component of the activity board. Schematic for wiring up the microcontroller and necessary periphery are provided the schematics directory.
+
 ## Requirements for building and flashing the firmware
 
 Building:
